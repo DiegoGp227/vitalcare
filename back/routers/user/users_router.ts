@@ -1,7 +1,6 @@
 import Router from "express"
-import {prismaClient} from "@primsa/client"
-const router = Router()
 
+const router = Router()
 
 interface IRegisterUser {
   name : string,
@@ -19,11 +18,6 @@ interface ILoginUser {
   cc : number
 }
 
-// router.get("/kfjldsa" , (req , res) => {
-//   const body = req.body
-//   res.json
-// })
-
 router.post("/register", (req , res) => {
   const body : IRegisterUser = req.body
   console.log(body);
@@ -32,12 +26,44 @@ router.post("/register", (req , res) => {
   })
 })
 
+router.post("/login", async (req, res) => {
+  try {
+    const { cc }: ILoginUser = req.body;
 
+    const paciente = await db.paciente.findFirst({
+      where: {
+        cedula: cc
+      }
+    });
 
-router.post("/login" , (req, res) => {
-  const body: ILoginUser = req.body
-  console.log(body);
+    if (!paciente) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+        success: false
+      });
+    }
 
+    res.json({
+      message: "Usuario encontrado",
+      success: true,
+      data: {
+        id: paciente.id,
+        cedula: paciente.cedula,
+        nombre: paciente.nombre,
+        apellido: paciente.apellido,
+        email: paciente.email,
+        telefono: paciente.telefono,
+        genero: paciente.genero,
+        demo: paciente.demo
+      }
+    });
+  } catch (error) {
+    console.error("Error en login:", error);
+    res.status(500).json({
+      message: "Error al buscar usuario",
+      success: false
+    });
+  }
 })
 
 export default router
