@@ -12,17 +12,13 @@ const PORT = process.env.PORT || 3000;
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.get("/ping", (_req, res) => {
   res.json({
     message: "pong",
   });
 });
-
 // router
-
 app.use("/user", user_router);
-
 // - listen
 app.listen(PORT, () => {
   console.log(`server init in port ${PORT} ...`);
