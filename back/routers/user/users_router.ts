@@ -1,23 +1,30 @@
 import Router from "express"
-
 const router = Router()
 
-router.get("/register", (_req , res) => {
+interface IRegisterUser {
+  name : string,
+  lasname : string
+  email : string,
+  password? : string,
+  gender : string,
+  indetification_number : number,
+  date_of_birth : Date,
+  phone_number : number,
+  is_demo : boolean
+}
+
+router.post("/register", (req , res) => {
+  const body : IRegisterUser = req.body
+  console.log(body);
   res.json({
-    message: "register route"
+    message: "create user"
   })
 })
 
-router.get("/login" , (_req , res) => {
-  res.json({
-    message: "login route"
-  })
-})
+router.post("/login" , (req, res) => {
+  const body = req.body
+  console.log(body);
 
-router.get("/user" , (_req , res) => {
-  res.json({
-    message: "user route"
-  })
 })
 
 export default router
