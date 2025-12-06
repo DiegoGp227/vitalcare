@@ -2,29 +2,44 @@
 
 @theme {
   /* Brand principal */
-  --color-primary: #22d3ee;
-  --color-primary-hover: #0ea5e9;
-  --color-primary-light: #a5f3fc;
+  --color-primary: #06b6d4;
+  --color-primary-hover: #0891b2;
+  --color-primary-light: #cffafe;
+  --color-primary-dark: #0e7490;
 
   /* Secundarios */
-  --color-blue: #0284c7;
-  --color-blue-hover: #0369a1;
+  --color-accent: #8b5cf6;
+  --color-accent-light: #ddd6fe;
+  --color-blue: #3b82f6;
+  --color-blue-light: #dbeafe;
 
-  /* Grises */
+  /* Grises modernos */
+  --color-gray-50: #f8fafc;
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-500: #64748b;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1e293b;
+  --color-gray-900: #0f172a;
+
+  /* Alias para compatibilidad */
   --color-gray-bg: #f1f5f9;
   --color-gray-soft: #64748b;
   --color-gray-border: #cbd5e1;
   --color-gray-hard: #0f172a;
 
-  /* Negro (UI) */
-  --color-black: #0b0b0e;
+  /* Colores de estado */
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-danger: #f43f5e;
+  --color-danger-light: #ffe4e6;
+  --color-warning: #f59e0b;
+  --color-warning-light: #fef3c7;
 
   /* Colores de texto y fondo */
   --color-foreground: #0b0b0e;
   --color-background: #ffffff;
-
-  /* Estado */
-  --color-success: #22c55e;
-  --color-danger: #ef4444;
-  --color-warning: #f59e0b;
 }
