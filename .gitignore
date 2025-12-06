@@ -61,3 +61,10 @@ next-env.d.ts
 # Temporary files
 *.tmp
 .temp/
+
+# back
+
+back/.env
+back/.env.local
+back/.env.development.local
+back/node_modules/
