@@ -1,5 +1,7 @@
 import Router from "express"
+import {prismaClient} from "@primsa/client"
 const router = Router()
+
 
 interface IRegisterUser {
   name : string,
@@ -13,6 +15,15 @@ interface IRegisterUser {
   is_demo : boolean
 }
 
+interface ILoginUser {
+  cc : number
+}
+
+// router.get("/kfjldsa" , (req , res) => {
+//   const body = req.body
+//   res.json
+// })
+
 router.post("/register", (req , res) => {
   const body : IRegisterUser = req.body
   console.log(body);
@@ -21,8 +32,10 @@ router.post("/register", (req , res) => {
   })
 })
 
+
+
 router.post("/login" , (req, res) => {
-  const body = req.body
+  const body: ILoginUser = req.body
   console.log(body);
 
 })
