@@ -28,6 +28,11 @@ app.use(cors());
 // router
 app.use("/user", user_router);
 app.use("/triage", triage_router);
+
+// Health check endpoint para Docker
+app.get("/ping", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
 // - listen
 app.listen(PORT, () => {
   console.log(`server init in port ${PORT} ...`);
