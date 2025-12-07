@@ -8,7 +8,7 @@ import { PatientInfor } from "../components/molecules/PatientInfor";
 import VitalSigns from "../components/molecules/VitalSigns";
 import { AIAnalysisPanel } from "../components/organisms/AIAnalysisPanel";
 import {
-  Paciente,
+  Patient,
   VitalSigns as VitalSignsType,
   AIAnalysis,
 } from "../../src/types/triage";
@@ -22,7 +22,7 @@ export default function TriagePage() {
   const { data: triagePatients, loading: loadingPatients, error: patientsError } =
     useGetTriageData();
 
-  const [selectedPatient, setSelectedPatient] = useState<Paciente | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
   // Seleccionar el primer paciente cuando se carguen los datos
   useEffect(() => {
@@ -65,7 +65,7 @@ export default function TriagePage() {
     if (!selectedPatient || finalTriage === 0) return;
 
     alert(
-      `Paciente ${selectedPatient.apellido} clasificado como Triage ${finalTriage}`
+      `Paciente ${selectedPatient.fullName} clasificado como Triage ${finalTriage}`
     );
   };
 
