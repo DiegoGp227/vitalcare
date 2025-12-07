@@ -1,4 +1,4 @@
-import { DoctorInfo as DoctorInfoType } from "@/app/types/doctor";
+import { DoctorInfo as DoctorInfoType } from "@/src/types/doctor";
 
 interface DoctorInfoProps {
   doctor: DoctorInfoType;

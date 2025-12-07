@@ -17,6 +17,24 @@ export interface Patient {
   chatCompleted: boolean;
 }
 
+export type Sintoma = {
+  id: string; // UUID
+  demo: boolean;
+  dolor: string;
+  fecha: string; // ISO datetime string
+};
+
+export type Paciente = {
+  id: number;
+  apellido: string;
+  cedula: number;
+  fechanacimiento: string; // YYYY-MM-DD
+  direccion: string;
+  email: string;
+  genero: string;
+  sintomas: Sintoma[];
+};
+
 export interface VitalSigns {
   heartRate: string;
   bloodPressure: string;

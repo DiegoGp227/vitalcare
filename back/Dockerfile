@@ -1,41 +1,59 @@
 # Multi-stage build para optimizar el tamaño de la imagen
 
 # Stage 1: Builder
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
-# Instalar pnpm
-RUN npm install -g pnpm
+# Instalar dependencias del sistema necesarias para onnxruntime-node
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar npm
+RUN npm install -g npm
 
 WORKDIR /app
 
 # Copiar archivos de dependencias
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json npm-lock.yaml* ./
 
 # Instalar dependencias
-RUN pnpm install --frozen-lockfile || pnpm install
+RUN npm install --frozen-lockfile || npm install
 
 # Copiar el código fuente
 COPY . .
 
 # Compilar TypeScript
-RUN pnpm run build
+RUN npm run build
 
 # Stage 2: Production
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
 
-# Instalar pnpm
-RUN npm install -g pnpm
+# Instalar dependencias del sistema necesarias para onnxruntime-node en runtime
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    libstdc++6 \
+    ca-certificates \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar npm
+RUN npm install -g npm
 
 WORKDIR /app
 
 # Copiar package.json
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json npm-lock.yaml* ./
 
-# Instalar solo dependencias de producción
-RUN pnpm install --prod --frozen-lockfile || pnpm install --prod
+# Copiar node_modules desde el builder (incluye binarios nativos compilados)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copiar código compilado desde el builder
 COPY --from=builder /app/dist ./dist
+
+# Cambiar permisos para el usuario node
+RUN chown -R node:node /app
 
 # Exponer puerto
 EXPOSE 4000
@@ -44,27 +62,34 @@ EXPOSE 4000
 USER node
 
 # Comando de producción
-CMD ["pnpm", "start"]
+CMD ["npm", "start"]
 
 # Stage 3: Development
-FROM node:20-alpine AS development
+FROM node:20-slim AS development
 
-# Instalar pnpm
-RUN npm install -g pnpm
+# Instalar dependencias del sistema necesarias para onnxruntime-node
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar npm
+RUN npm install -g npm
 
 WORKDIR /app
 
 # Copiar archivos de dependencias
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json npm-lock.yaml* ./
 
 # Instalar todas las dependencias (incluyendo dev)
-RUN pnpm install --frozen-lockfile || pnpm install
+RUN npm install --frozen-lockfile || npm install
 
 # Copiar el resto del código
 COPY . .
 
 # Exponer puerto
-EXPOSE 4000
+EXPOSE 8008
 
 # Comando de desarrollo (con hot reload)
-CMD ["pnpm", "dev"]
+CMD ["npm", "dev"]

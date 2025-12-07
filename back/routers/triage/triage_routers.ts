@@ -2,6 +2,12 @@ import { Router } from "express";
 import axios from "axios";
 import { vectorizeAllHistory } from "../../services/vectorization.service";
 
+enum EstadoPaciente {
+  EN_ESPERA = "en espera",
+  EN_DIAGNOSTICO = "en diagnostico",
+  EN_CONSULTA = "en consulta",
+}
+
 const router = Router();
 
 interface routerProp {
@@ -30,6 +36,7 @@ router.get("/userBy/:id", async (req, res) => {
         demo
         dolor
         fecha
+        triage
         id
       }
     }
@@ -49,7 +56,6 @@ router.get("/userBy/:id", async (req, res) => {
         },
       }
     );
-    console.log(response.data.data);
     res.json({
       data: response.data.data,
     });
@@ -221,6 +227,91 @@ router.get("/userState", async (req, res) => {
     });
   } catch (error: any) {
     console.error("Error:", error.response?.data || error.message);
+    res.status(500).json({
+      error: "Server error",
+      message: error.message,
+      details: error.response?.data,
+    });
+  }
+});
+
+interface newStateProp {
+  id_user: number;
+  new_state: string;
+  severity_level: number; // 1-5 según nivel de urgencia
+  description?: string;
+}
+
+router.post("/newState", async (req, res) => {
+  try {
+    const { id_user, new_state, severity_level, description }: newStateProp =
+      req.body;
+    console.log("Insertando estado para usuario:", {
+      id_user,
+      new_state,
+      severity_level,
+    });
+
+    // Validar que severity_level esté entre 1 y 5
+    if (severity_level < 1 || severity_level > 5) {
+      return res.status(400).json({
+        error: "Validation error",
+        message: "severity_level debe estar entre 1 y 5",
+      });
+    }
+
+    const mutation = `
+      mutation InsertEstadoPaciente(
+        $pacienteid: Int!
+        $severity_level: Int!
+      ) {
+        insert_estado_paciente_one(object: {
+          pacienteid: $pacienteid
+          severity_level: $severity_level
+        }) {
+          id
+          pacienteid
+          severity_level
+          display_order
+        }
+      }
+    `;
+
+    const response = await axios.post(
+      HASURA_GRAPHQL_ENDPOINT,
+      {
+        query: mutation,
+        variables: {
+          pacienteid: id_user,
+          name: new_state,
+          severity_level: severity_level,
+          description: description || "",
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+        },
+      }
+    );
+
+    if (response.data.errors) {
+      return res.status(400).json({
+        error: "GraphQL errors",
+        details: response.data.errors,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: response.data.data,
+    });
+  } catch (error: any) {
+    console.error(
+      "Error actualizando estado:",
+      error.response?.data || error.message
+    );
     res.status(500).json({
       error: "Server error",
       message: error.message,

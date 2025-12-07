@@ -1,6 +1,6 @@
 import { DoctorInfo } from "../molecules/DoctorInfo";
 import { DoctorStats } from "../molecules/DoctorStats";
-import { DoctorInfo as DoctorInfoType, DoctorStats as DoctorStatsType } from "@/app/types/doctor";
+import { DoctorInfo as DoctorInfoType, DoctorStats as DoctorStatsType } from "@/src/types/doctor";
 
 interface DoctorProfileProps {
   doctor: DoctorInfoType;

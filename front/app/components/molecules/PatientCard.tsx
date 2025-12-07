@@ -1,4 +1,4 @@
-import { AssignedPatient } from "@/app/types/doctor";
+import { AssignedPatient } from "@/src/types/doctor";
 
 interface PatientCardProps {
   patient: AssignedPatient;

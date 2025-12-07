@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/molecules/Header";
 import { UserQueue } from "../components/organisms/UserQueue";
@@ -11,15 +11,29 @@ import {
   Patient,
   VitalSigns as VitalSignsType,
   AIAnalysis,
-} from "../types/triage";
-import { waitingPatients } from "@/src/test/testdata";
+} from "../../src/types/triage";
+import { useGetTriageData } from "@/src/triage/hooks/useGetTriageData";
+import { useGetPersonalData } from "@/src/triage/hooks/useGetPersonalDataById";
 
 export default function TriagePage() {
   const router = useRouter();
 
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
-    waitingPatients[0]
-  );
+  // Hook para obtener todos los pacientes en espera de triage
+  const { data: triagePatients, loading: loadingPatients, error: patientsError } =
+    useGetTriageData();
+
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+
+  // Seleccionar el primer paciente cuando se carguen los datos
+  useEffect(() => {
+    if (triagePatients.length > 0 && !selectedPatient) {
+      setSelectedPatient(triagePatients[0]);
+    }
+  }, [triagePatients, selectedPatient]);
+
+  // Hook que automáticamente hace fetch cuando cambia el paciente seleccionado
+  const { data: patientData, loading: loadingPatientData, error: patientError } =
+    useGetPersonalData(selectedPatient?.id.toString() || null);
   const [vitalSigns, setVitalSigns] = useState<VitalSignsType>({
     heartRate: "",
     bloodPressure: "",
@@ -62,7 +76,7 @@ export default function TriagePage() {
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
         <div className="flex justify-center gap-10">
           <UserQueue
-            patients={waitingPatients}
+            patients={triagePatients}
             selectedPatient={selectedPatient}
             onSelectPatient={setSelectedPatient}
           />

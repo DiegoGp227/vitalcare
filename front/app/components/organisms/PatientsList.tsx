@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { PatientCard } from "../molecules/PatientCard";
-import { AssignedPatient } from "@/app/types/doctor";
+import { AssignedPatient } from "@/src/types/doctor";
 
 interface PatientsListProps {
   patients: AssignedPatient[];

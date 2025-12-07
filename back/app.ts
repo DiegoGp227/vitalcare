@@ -13,14 +13,14 @@ import {
 
 // routers
 import user_router from "./routers/user/users_router.js";
-import triage_router from "./routers/triage/triage_routers";
-
+import triage_router from "./routers/triage/triage_routers.js";
+import doctor_router from "./routers/doctor/doctor_router.js";
 // - variables
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // - middleware
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
@@ -28,9 +28,11 @@ app.use(cors());
 // router
 app.use("/user", user_router);
 app.use("/triage", triage_router);
-// - listen
-app.listen(PORT, () => {
-  console.log(`server init in port ${PORT} ...`);
+app.use("/doctor", doctor_router);
+
+// Health check endpoint para Docker
+app.get("/ping", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // --- Inicialización del Servidor ---

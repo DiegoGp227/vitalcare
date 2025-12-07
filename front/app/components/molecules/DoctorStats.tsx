@@ -1,4 +1,4 @@
-import { DoctorStats as DoctorStatsType } from "@/app/types/doctor";
+import { DoctorStats as DoctorStatsType } from "@/src/types/doctor";
 
 interface DoctorStatsProps {
   stats: DoctorStatsType;
