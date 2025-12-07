@@ -22,8 +22,7 @@ router.post("/", async (req, res) => {
       cedula
       id
       fechanacimiento
-      contrase_a
-      demo
+
       direccion
       email
       genero
@@ -57,6 +56,120 @@ router.post("/", async (req, res) => {
   } catch {
     res.json({
       mgs: "mensaje",
+    });
+  }
+});
+
+interface ConstantesVitales {
+  demo: boolean;
+  estadoconciencia: string;
+  frecuenciacardiacafc: Float;
+  frecuenciarespiratoriafr: Float;
+  pacienteid: number;
+  peso: Float;
+  presionarterialpa: Float;
+  saturaciondeoxigeno: Float;
+  temperaturacorporal: Float;
+}
+
+router.post("/data", async (req, res) => {
+  const {
+    demo,
+    estadoconciencia,
+    frecuenciacardiacafc,
+    frecuenciarespiratoriafr,
+    pacienteid,
+    peso,
+    presionarterialpa,
+    saturaciondeoxigeno,
+    temperaturacorporal,
+  }: ConstantesVitales = req.body;
+
+  // Generar fecha y hora actual
+  const fechatoma = new Date().toISOString();
+
+  const query = `
+    mutation InsertConstantesVitales(
+      $demo: Boolean!
+      $estadoconciencia: String!
+      $fechatoma: timestamp!
+      $frecuenciacardiacafc: Float!
+      $frecuenciarespiratoriafr: Float!
+      $pacienteid: Int!
+      $peso: Float!
+      $presionarterialpa: Float!
+      $saturaciondeoxigeno: Float!
+      $temperaturacorporal: Float!
+    ) {
+      insert_constantesvitales_one(object: {
+        demo: $demo
+        estadoconciencia: $estadoconciencia
+        fechatoma: $fechatoma
+        frecuenciacardiacafc: $frecuenciacardiacafc
+        frecuenciarespiratoriafr: $frecuenciarespiratoriafr
+        pacienteid: $pacienteid
+        peso: $peso
+        presionarterialpa: $presionarterialpa
+        saturaciondeoxigeno: $saturaciondeoxigeno
+        temperaturacorporal: $temperaturacorporal
+      }) {
+        demo
+        estadoconciencia
+        fechatoma
+        frecuenciacardiacafc
+        frecuenciarespiratoriafr
+        pacienteid
+        peso
+        saturaciondeoxigeno
+        temperaturacorporal
+        presionarterialpa
+      }
+    }
+  `;
+
+  try {
+    const response = await axios.post(
+      HASURA_GRAPHQL_ENDPOINT,
+      {
+        query: query,
+        variables: {
+          demo,
+          estadoconciencia,
+          fechatoma,
+          frecuenciacardiacafc,
+          frecuenciarespiratoriafr,
+          pacienteid,
+          peso,
+          presionarterialpa,
+          saturaciondeoxigeno,
+          temperaturacorporal,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+        },
+      }
+    );
+
+    if (response.data.errors) {
+      return res.status(400).json({
+        error: "GraphQL errors",
+        details: response.data.errors,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: response.data.data,
+    });
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+    res.status(500).json({
+      error: "Server error",
+      message: error.message,
+      details: error.response?.data,
     });
   }
 });
