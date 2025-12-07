@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "../components/molecules/Header";
 import { DoctorProfile } from "../components/organisms/DoctorProfile";
 import { PatientsList } from "../components/organisms/PatientsList";
 import { DoctorInfo, AssignedPatient, DoctorStats } from "@/src/types/doctor";
 
 export default function DoctorPage() {
+  const router = useRouter();
   // Estado del doctor (esto deberia venir de una API o contexto de autenticacion)
   const [doctorInfo] = useState<DoctorInfo>({
     id: "DOC001",
@@ -55,9 +57,8 @@ export default function DoctorPage() {
   });
 
   const handleStartConsultation = (patient: AssignedPatient) => {
-    // Aqui podrias redirigir a una pagina de consulta especifica
-    // router.push(`/doctor/consultation/${patient.id}`);
-    console.log("Iniciando consulta con:", patient.fullName);
+    // Redirigir a la pagina de consulta
+    router.push(`/doctor/consultation/${patient.id}`);
   };
 
   return (
