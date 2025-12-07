@@ -1,4 +1,4 @@
-import { VitalSigns as VitalSignsType } from "@/app/types/triage";
+import { VitalSigns as VitalSignsType } from "@/src/types/triage";
 
 interface VitalSignsProps {
   vitalSigns: VitalSignsType;
