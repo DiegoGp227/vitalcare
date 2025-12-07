@@ -132,7 +132,7 @@ router.get("/webhook", (req, res) => {
 });
 
 router.post("/reporteInfo", async (req, res) => {
-  const payload: DiagnosePayload = {
+  const payload: any = {
     query: "cómo esta el paciente",
     patient_dni: req.body.cc,
   };
