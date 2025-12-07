@@ -24,7 +24,7 @@ export default function TriagePage() {
     oxygenSaturation: "",
     respiratoryRate: "",
   });
- 
+
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [finalTriage, setFinalTriage] = useState<number>(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -77,7 +77,7 @@ export default function TriagePage() {
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
         <div className="flex justify-center gap-10">
           <UserQueue
-            patients={waitingPatients} // <-- aquí pasas los pacientes de prueba
+            patients={waitingPatients}
             selectedPatient={selectedPatient}
             onSelectPatient={setSelectedPatient}
           />
