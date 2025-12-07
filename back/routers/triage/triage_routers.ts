@@ -14,7 +14,7 @@ const HASURA_ADMIN_SECRET =
   "IAQXSF0JRCFC2ylKMuD6ZNnzdhKc69iSbxwTuG9EWEdy1CsLYsrmPWzBpqhh14Bc";
 
 router.get("/userBy/:id", async (req, res) => {
-  const { id } = req.params.id;
+  const id = parseInt(req.params.id);
   const query = `
   query MyQuery($id : Int!) {
     paciente(where: { id: { _eq: $id } }){
@@ -62,13 +62,13 @@ router.get("/userBy/:id", async (req, res) => {
 interface ConstantesVitales {
   demo: boolean;
   estadoconciencia: string;
-  frecuenciacardiacafc: Float;
-  frecuenciarespiratoriafr: Float;
+  frecuenciacardiacafc: number;
+  frecuenciarespiratoriafr: number;
   pacienteid: number;
-  peso: Float;
-  presionarterialpa: Float;
-  saturaciondeoxigeno: Float;
-  temperaturacorporal: Float;
+  peso: number;
+  presionarterialpa: number;
+  saturaciondeoxigeno: number;
+  temperaturacorporal: number;
 }
 
 router.post("/data", async (req, res) => {
@@ -173,32 +173,32 @@ router.post("/data", async (req, res) => {
   }
 });
 
-router.get("/userState", async (req, res) => {
-  const query = `
-  query MyQuery($id : Int!) {
-    paciente(where: { id: { _eq: $id } }){
-      apellido
-      cedula
-      id
-      fechanacimiento
-      direccion
-      email
-      genero
-      sintomas {
-        demo
-        dolor
-        fecha
-        id
-      }
-    }
-  }
-  `;
+// router.get("/userState", async (req, res) => {
+//   const query = `
+//   query MyQuery($id : Int!) {
+//     paciente(where: { id: { _eq: $id } }){
+//       apellido
+//       cedula
+//       id
+//       fechanacimiento
+//       direccion
+//       email
+//       genero
+//       sintomas {
+//         demo
+//         dolor
+//         fecha
+//         id
+//       }
+//     }
+//   }
+//   `;
 
-  const response = await axios.get({ query });
+//   const response = await axios.get({ query: query });
 
-  res.json({
-    data: response.data.data,
-  });
-});
+//   res.json({
+//     data: response.data.data,
+//   });
+// });
 
 export default router;
