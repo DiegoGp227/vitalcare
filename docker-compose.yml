@@ -15,12 +15,19 @@ services:
       PORT: 8008
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      # Variables de PostgreSQL
+      PG_HOST: ${PG_HOST}
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
+      PG_PORT: ${PG_PORT:-5432}
+      PG_SSLMODE: ${PG_SSLMODE}
     ports:
       - "${BACKEND_PORT:-8008}:8008"
     networks:
       - vitalcare-network
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/ping"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8008/ping"]
       interval: 30s
       timeout: 10s
       retries: 3
