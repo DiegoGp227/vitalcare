@@ -89,7 +89,7 @@ RUN npm install --frozen-lockfile || npm install
 COPY . .
 
 # Exponer puerto
-EXPOSE 4000
+EXPOSE 8008
 
 # Comando de desarrollo (con hot reload)
 CMD ["npm", "dev"]
