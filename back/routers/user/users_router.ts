@@ -131,4 +131,22 @@ router.get("/webhook", (req, res) => {
   res.sendStatus(403);
 });
 
+router.post("/reporteInfo", async (req, res) => {
+  const payload: DiagnosePayload = {
+    query: "cómo esta el paciente",
+    patient_dni: "12345678",
+  };
+  const url = "https://wear-boston-valuable-ran.trycloudflare.com/diagnose";
+  const response = await axios.post(url, payload, {
+    headers: {
+      accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+
+  res.json({
+    menssage: response.data,
+  });
+});
+
 export default router;
