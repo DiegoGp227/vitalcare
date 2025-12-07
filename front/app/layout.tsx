@@ -1,7 +1,6 @@
 import "../styles/global.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SWRProvider } from "@/provider/swrProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,11 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-hard min-h-screen flex flex-col`}
       >
-        <SWRProvider>
           <div className="max-w-screen-2xl mx-auto flex-1 w-full bg-gray-bg">
             {children}
           </div>
-        </SWRProvider>
       </body>
     </html>
   );

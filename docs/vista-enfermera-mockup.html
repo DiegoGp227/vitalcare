@@ -62,33 +62,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        .header-content {
-            max-width: 1600px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
 
-        .header-title h1 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: white;
-            letter-spacing: -0.5px;
-        }
-
-        .header-title p {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-top: 0.25rem;
-            font-weight: 400;
-        }
-
-        .header-user {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
 
         .user-info {
             text-align: right;
@@ -780,37 +754,57 @@
     <!-- Main Content -->
     <div class="main-container">
         <!-- Panel Izquierdo - Lista de Pacientes -->
-        <div>
-            <div class="card">
-                <div class="card-header">
-                    <h2>⏳ Esperando Triage</h2>
-                    <p>3 pacientes en espera</p>
-                </div>
-                <div class="patient-list">
-                    <div class="patient-item active">
-                        <div class="waiting-badge">Esperando</div>
-                        <h3>María González Ruiz</h3>
-                        <p class="patient-meta">CC: 1.045.678.901</p>
-                        <p class="patient-complaint">💔 Dolor Torácico</p>
-                        <p class="patient-time">14:23</p>
-                    </div>
-                    <div class="patient-item">
-                        <div class="waiting-badge">Esperando</div>
-                        <h3>Juan Pérez Morales</h3>
-                        <p class="patient-meta">CC: 1.098.234.567</p>
-                        <p class="patient-complaint">🦶 Trauma en Tobillo</p>
-                        <p class="patient-time">14:35</p>
-                    </div>
-                    <div class="patient-item">
-                        <div class="waiting-badge">Esperando</div>
-                        <h3>Ana Martínez López</h3>
-                        <p class="patient-meta">CC: 52.876.543</p>
-                        <p class="patient-complaint">😰 Dificultad Respiratoria</p>
-                        <p class="patient-time">14:48</p>
-                    </div>
-                </div>
-            </div>
+       <div>
+  <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+    <!-- Card Header -->
+    <div class="px-6 py-5 border-b-2 border-gray-100 bg-gradient-to-b from-white to-gray-50">
+      <h2 class="text-gray-800 font-bold text-lg">⏳ Esperando Triage</h2>
+      <p class="text-gray-500 text-sm mt-1 font-medium">3 pacientes en espera</p>
+    </div>
+
+    <!-- Lista de Pacientes -->
+    <div class="flex flex-col gap-3 p-4">
+      <!-- Paciente Activo -->
+      <div class="relative bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl p-4 shadow-lg">
+        <div class="absolute top-4 right-4 px-3 py-1 bg-white text-cyan-500 rounded-full text-xs font-bold uppercase shadow">
+          Esperando
         </div>
+        <h3 class="text-white font-bold text-sm mb-1">María González Ruiz</h3>
+        <p class="text-white/80 text-xs font-semibold uppercase tracking-wide">CC: 1.045.678.901</p>
+        <p class="mt-2 inline-block px-3 py-1 bg-white/30 rounded-lg text-white font-semibold text-sm">💔 Dolor Torácico</p>
+        <p class="mt-2 flex items-center gap-1 text-white/80 text-xs font-semibold">
+          🕐 14:23
+        </p>
+      </div>
+
+      <!-- Paciente Inactivo -->
+      <div class="relative bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-cyan-500 hover:translate-x-1 hover:shadow-md transition-all">
+        <div class="absolute top-4 right-4 px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold uppercase shadow">
+          Esperando
+        </div>
+        <h3 class="text-gray-800 font-bold text-sm mb-1">Juan Pérez Morales</h3>
+        <p class="text-gray-500 text-xs font-semibold uppercase tracking-wide">CC: 1.098.234.567</p>
+        <p class="mt-2 inline-block px-3 py-1 bg-cyan-100 text-cyan-900 rounded-lg text-sm font-semibold">🦶 Trauma en Tobillo</p>
+        <p class="mt-2 flex items-center gap-1 text-gray-400 text-xs font-semibold">
+          🕐 14:35
+        </p>
+      </div>
+
+      <div class="relative bg-white border-2 border-gray-200 rounded-xl p-4 cursor-pointer hover:border-cyan-500 hover:translate-x-1 hover:shadow-md transition-all">
+        <div class="absolute top-4 right-4 px-3 py-1 bg-green-500 text-white rounded-full text-xs font-bold uppercase shadow">
+          Esperando
+        </div>
+        <h3 class="text-gray-800 font-bold text-sm mb-1">Ana Martínez López</h3>
+        <p class="text-gray-500 text-xs font-semibold uppercase tracking-wide">CC: 52.876.543</p>
+        <p class="mt-2 inline-block px-3 py-1 bg-cyan-100 text-cyan-900 rounded-lg text-sm font-semibold">😰 Dificultad Respiratoria</p>
+        <p class="mt-2 flex items-center gap-1 text-gray-400 text-xs font-semibold">
+          🕐 14:48
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
 
         <!-- Panel Central - Formulario -->
         <div class="form-section">
