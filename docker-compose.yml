@@ -1,6 +1,52 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: vitalcare-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vitalcare_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vitalcare_secure_password_2024}
+      POSTGRES_DB: ${POSTGRES_DB:-vitalcare}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vitalcare-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vitalcare_user} -d ${POSTGRES_DB:-vitalcare}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API (Node.js + Express + Prisma)
+  backend:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    container_name: vitalcare-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-vitalcare_user}:${POSTGRES_PASSWORD:-vitalcare_secure_password_2024}@postgres:5432/${POSTGRES_DB:-vitalcare}?schema=public
+      PORT: ${BACKEND_PORT:-4000}
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+      - /app/.prisma
+    networks:
+      - vitalcare-network
+    command: sh -c "pnpm db:push && pnpm dev"
+
+  # Frontend (Next.js)
   frontend:
     build:
       context: ./front
