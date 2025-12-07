@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "../components/molecules/Header";
 import { UserQueue } from "../components/organisms/UserQueue";
 import { PatientInfor } from "../components/molecules/PatientInfor";
@@ -14,6 +15,8 @@ import {
 import { waitingPatients } from "@/src/test/testdata";
 
 export default function TriagePage() {
+  const router = useRouter();
+
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
     waitingPatients[0]
   );
@@ -30,36 +33,18 @@ export default function TriagePage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAnalyzeWithAI = () => {
-    setIsAnalyzing(true);
+    if (!selectedPatient) return;
 
-    setTimeout(() => {
-      setAiAnalysis({
-        suggestedTriage: 2,
-        confidence: 87,
-        diagnoses: [
-          { name: "Síndrome coronario agudo", probability: 45 },
-          { name: "Angina inestable", probability: 32 },
-          { name: "Reflujo gastroesofágico", probability: 23 },
-        ],
-        recommendedStudies: {
-          labs: [
-            { test: "Troponina", priority: "URGENTE" },
-            { test: "BNP", priority: "ALTA" },
-            { test: "Hemograma completo", priority: "MEDIA" },
-          ],
-          imaging: [
-            { test: "ECG", priority: "URGENTE" },
-            { test: "Rx Tórax", priority: "ALTA" },
-          ],
-        },
-        predictions: {
-          estimatedStay: "3.2h ± 1.1h",
-          admissionProbability: 45,
-          deteriorationRisk: 28,
-        },
-      });
-      setIsAnalyzing(false);
-    }, 1500);
+    // Validar que se hayan ingresado los signos vitales
+    const hasVitalSigns = Object.values(vitalSigns).some(value => value !== "");
+
+    if (!hasVitalSigns) {
+      alert("Por favor ingresa al menos un signo vital antes de analizar");
+      return;
+    }
+
+    // Redirigir a la pantalla de carga/análisis
+    router.push(`/triage/analyzing?patientId=${selectedPatient.id}`);
   };
 
   const handleConfirmTriage = () => {

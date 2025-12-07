@@ -1,53 +1,55 @@
 version: '3.8'
 
 services:
+  # Backend (Express + TypeScript)
   backend:
     build:
       context: ./back
       dockerfile: Dockerfile
+      target: production
     container_name: vitalcare-backend
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
+    restart: always
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      DATABASE_URL: postgresql://${POSTGRES_USER:-vitalcare_user}:${POSTGRES_PASSWORD:-vitalcare_secure_password_2024}@postgres:5432/${POSTGRES_DB:-vitalcare}?schema=public
-      PORT: ${BACKEND_PORT:-4000}
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: 4000
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
     ports:
       - "${BACKEND_PORT:-4000}:4000"
-    volumes:
-      - ./back:/app
-      - /app/node_modules
-      - /app/.prisma
     networks:
       - vitalcare-network
-    command: sh -c "pnpm db:push && pnpm dev"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Frontend (Next.js)
   frontend:
     build:
       context: ./front
       dockerfile: Dockerfile
+      target: development
     container_name: vitalcare-frontend
-    restart: unless-stopped
+    restart: always
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
-    volumes:
-      - ./front:/app
-      - /app/node_modules
-      - /app/.next
     networks:
       - vitalcare-network
-
-volumes:
-  postgres_data:
-    driver: local
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
 networks:
   vitalcare-network:

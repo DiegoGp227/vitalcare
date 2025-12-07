@@ -1,7 +1,7 @@
 # Multi-stage build para optimizar el tamaño de la imagen
 
-# Stage 1: Dependencies
-FROM node:20-alpine AS deps
+# Stage 1: Builder
+FROM node:20-alpine AS builder
 
 # Instalar pnpm
 RUN npm install -g pnpm
@@ -14,27 +14,13 @@ COPY package.json pnpm-lock.yaml* ./
 # Instalar dependencias
 RUN pnpm install --frozen-lockfile || pnpm install
 
-# Stage 2: Builder
-FROM node:20-alpine AS builder
-
-# Instalar pnpm
-RUN npm install -g pnpm
-
-WORKDIR /app
-
-# Copiar dependencias desde deps
-COPY --from=deps /app/node_modules ./node_modules
-
-# Copiar código fuente
+# Copiar el código fuente
 COPY . .
 
-# Deshabilitar telemetría de Next.js
-ENV NEXT_TELEMETRY_DISABLED 1
+# Compilar TypeScript
+RUN pnpm run build
 
-# Compilar la aplicación
-RUN pnpm build
-
-# Stage 3: Production
+# Stage 2: Production
 FROM node:20-alpine AS production
 
 # Instalar pnpm
@@ -42,25 +28,25 @@ RUN npm install -g pnpm
 
 WORKDIR /app
 
-# Deshabilitar telemetría de Next.js
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+# Copiar package.json
+COPY package.json pnpm-lock.yaml* ./
 
-# Copiar archivos necesarios
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Instalar solo dependencias de producción
+RUN pnpm install --prod --frozen-lockfile || pnpm install --prod
+
+# Copiar código compilado desde el builder
+COPY --from=builder /app/dist ./dist
 
 # Exponer puerto
-EXPOSE 3000
+EXPOSE 4000
 
 # Usuario no root para seguridad
 USER node
 
 # Comando de producción
-CMD ["node", "server.js"]
+CMD ["pnpm", "start"]
 
-# Stage 4: Development
+# Stage 3: Development
 FROM node:20-alpine AS development
 
 # Instalar pnpm
@@ -78,7 +64,7 @@ RUN pnpm install --frozen-lockfile || pnpm install
 COPY . .
 
 # Exponer puerto
-EXPOSE 3000
+EXPOSE 4000
 
 # Comando de desarrollo (con hot reload)
 CMD ["pnpm", "dev"]
