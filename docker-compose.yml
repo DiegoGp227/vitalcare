@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    container_name: vitalcare-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - vitalcare-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  vitalcare-network:
+    driver: bridge
