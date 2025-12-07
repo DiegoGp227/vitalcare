@@ -33,6 +33,9 @@ FROM node:20-slim AS production
 # Instalar dependencias del sistema necesarias para onnxruntime-node en runtime
 RUN apt-get update && apt-get install -y \
     libgomp1 \
+    libstdc++6 \
+    ca-certificates \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar pnpm
@@ -43,11 +46,14 @@ WORKDIR /app
 # Copiar package.json
 COPY package.json pnpm-lock.yaml* ./
 
-# Instalar solo dependencias de producción
-RUN pnpm install --prod --frozen-lockfile || pnpm install --prod
+# Copiar node_modules desde el builder (incluye binarios nativos compilados)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copiar código compilado desde el builder
 COPY --from=builder /app/dist ./dist
+
+# Cambiar permisos para el usuario node
+RUN chown -R node:node /app
 
 # Exponer puerto
 EXPOSE 4000
