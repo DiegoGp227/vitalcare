@@ -1,4 +1,4 @@
-import { AIAnalysis } from "@/app/types/triage";
+import { AIAnalysis } from "@/src/types/triage";
 
 interface AIAnalysisPanelProps {
   analysis: AIAnalysis | null;

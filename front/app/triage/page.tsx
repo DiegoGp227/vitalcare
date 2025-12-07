@@ -11,8 +11,9 @@ import {
   Patient,
   VitalSigns as VitalSignsType,
   AIAnalysis,
-} from "../types/triage";
+} from "../../src/types/triage";
 import { waitingPatients } from "@/src/test/testdata";
+import { useGetPersonalData } from "@/src/triage/hooks/useGetPersonalDataById";
 
 export default function TriagePage() {
   const router = useRouter();
@@ -20,6 +21,10 @@ export default function TriagePage() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
     waitingPatients[0]
   );
+
+  // Hook que automáticamente hace fetch cuando cambia el paciente seleccionado
+  const { data: patientData, loading: loadingPatientData, error: patientError } =
+    useGetPersonalData(selectedPatient?.id || null);
   const [vitalSigns, setVitalSigns] = useState<VitalSignsType>({
     heartRate: "",
     bloodPressure: "",
