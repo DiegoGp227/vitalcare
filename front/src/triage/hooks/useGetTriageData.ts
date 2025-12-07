@@ -1,6 +1,7 @@
 "use client";
 
 import { TriageDataURL } from "@/src/shared/constants/urls";
+import { Patient } from "@/src/types/triage";
 import { useState, useEffect } from "react";
 
 export interface ISintoma {
@@ -21,8 +22,39 @@ export interface IPaciente {
   sintomas: ISintoma[];
 }
 
+// Función para mapear IPaciente a Patient
+const mapToPatient = (paciente: IPaciente): Patient => {
+  const calculateAge = (birthDate: string): number => {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  return {
+    id: paciente.id.toString(),
+    cedula: paciente.cedula.toString(),
+    name: "",
+    lastName: paciente.apellido,
+    fullName: paciente.apellido,
+    age: calculateAge(paciente.fechanacimiento),
+    dateOfBirth: paciente.fechanacimiento,
+    gender: paciente.genero,
+    address: paciente.direccion,
+    phone: "",
+    email: paciente.email,
+    chiefComplaint: paciente.sintomas?.[0]?.dolor || "Sin síntomas registrados",
+    arrivalTime: new Date(paciente.sintomas?.[0]?.fecha || new Date()).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }),
+    chatCompleted: false,
+  };
+};
+
 export const useGetTriageData = () => {
-  const [data, setData] = useState<IPaciente[]>([]);
+  const [data, setData] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,11 +80,13 @@ export const useGetTriageData = () => {
         console.log('API Response:', json);
         console.log('json.data:', json.data);
         console.log('json.data.paciente:', json.data?.paciente);
-        console.log('Extracted pacientes:', json.data?.paciente);
 
-        const pacientes = json.data?.paciente || [];
-        console.log('Setting data to:', pacientes);
-        setData(pacientes);
+        const pacientesFromAPI: IPaciente[] = json.data?.paciente || [];
+        console.log('Extracted pacientes:', pacientesFromAPI);
+
+        const mappedPatients = pacientesFromAPI.map(mapToPatient);
+        console.log('Mapped patients:', mappedPatients);
+        setData(mappedPatients);
       } catch (err: any) {
         console.error('Error in useGetTriageData:', err);
         console.error('Error stack:', err.stack);

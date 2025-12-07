@@ -4,7 +4,7 @@ import { useState } from "react";
 import Header from "../components/molecules/Header";
 import { DoctorProfile } from "../components/organisms/DoctorProfile";
 import { PatientsList } from "../components/organisms/PatientsList";
-import { DoctorInfo, AssignedPatient, DoctorStats } from "../types/doctor";
+import { DoctorInfo, AssignedPatient, DoctorStats } from "@/src/types/doctor";
 
 export default function DoctorPage() {
   // Estado del doctor (esto deberia venir de una API o contexto de autenticacion)

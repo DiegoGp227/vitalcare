@@ -1,3 +1,22 @@
+// Tipos para el sistema de triage
+
+export interface Patient {
+  id: string;
+  cedula: string;
+  name: string;
+  lastName: string;
+  fullName: string;
+  age: number;
+  dateOfBirth: string;
+  gender: string;
+  address: string;
+  phone: string;
+  email: string;
+  chiefComplaint: string;
+  arrivalTime: string;
+  chatCompleted: boolean;
+}
+
 export type Sintoma = {
   id: string; // UUID
   demo: boolean;
@@ -15,6 +34,7 @@ export type Paciente = {
   genero: string;
   sintomas: Sintoma[];
 };
+
 export interface VitalSigns {
   heartRate: string;
   bloodPressure: string;
