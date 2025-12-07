@@ -15,7 +15,6 @@ const HASURA_ADMIN_SECRET =
 
 router.post("/", async (req, res) => {
   const { id }: routerProp = req.body;
-  console.log(id);
   const query = `
   query MyQuery($id : Int!) {
     paciente(where: { id: { _eq: $id } }){
