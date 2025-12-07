@@ -1,25 +1,70 @@
-¡Claro! Aquí tienes el contenido de un archivo .gitignore básico para un proyecto de Node.js que excluye las carpetas y archivos que mencionaste.
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-⚙️ Archivo .gitignore
-Copia y pega el siguiente contenido en un archivo llamado .gitignore en la raíz de tu proyecto:
+# Testing
+coverage/
 
-# Directorios de dependencias
-/node_modules
+# Next.js (Frontend)
+front/.next/
+front/out/
+front/build/
 
-# Variables de entorno
+# Backend build
+back/dist/
+back/build/
+
+# Production
+build/
+dist/
+
+# Environment variables
 .env
+.env*.local
+.env.development
+.env.production
+.env.test
 
-# Archivos de logs
-*.log
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
+logs/
+*.log
 
-# Archivos de caché
+# OS
 .DS_Store
-*.seed
-*.json.d.ts
+*.pem
+Thumbs.db
 
-# Compilados de TypeScript/JavaScript
-/dist
-/build
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# Temporary files
+*.tmp
+.temp/
+
+# back
+
+back/.env
+back/.env.local
+back/.env.development.local
+back/node_modules/
