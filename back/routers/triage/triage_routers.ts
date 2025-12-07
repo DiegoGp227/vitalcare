@@ -5,7 +5,7 @@ import { vectorizeAllHistory } from "../../services/vectorization.service";
 enum EstadoPaciente {
   EN_ESPERA = "en espera",
   EN_DIAGNOSTICO = "en diagnostico",
-  EN_CONSULTA = "en consulta"
+  EN_CONSULTA = "en consulta",
 }
 
 const router = Router();
@@ -56,7 +56,6 @@ router.get("/userBy/:id", async (req, res) => {
         },
       }
     );
-    console.log(response.data.data);
     res.json({
       data: response.data.data,
     });
@@ -239,20 +238,28 @@ router.get("/userState", async (req, res) => {
 interface newStateProp {
   id_user: number;
   new_state: string;
-  severity_level?: number;
+  severity_level: number; // 1-5 según nivel de urgencia
   description?: string;
 }
 
 router.post("/newState", async (req, res) => {
   try {
     const { id_user, new_state, severity_level, description }: newStateProp = req.body;
-    console.log("Insertando nuevo estado para usuario:", { id_user, new_state });
+    console.log("Insertando estado para usuario:", { id_user, new_state, severity_level });
+
+    // Validar que severity_level esté entre 1 y 5
+    if (severity_level < 1 || severity_level > 5) {
+      return res.status(400).json({
+        error: "Validation error",
+        message: "severity_level debe estar entre 1 y 5"
+      });
+    }
 
     const mutation = `
       mutation InsertEstadoPaciente(
         $pacienteid: Int!
         $name: String!
-        $severity_level: Int
+        $severity_level: Int!
         $description: String
       ) {
         insert_estado_paciente_one(object: {
@@ -271,25 +278,16 @@ router.post("/newState", async (req, res) => {
       }
     `;
 
-    // Construir variables solo con los campos proporcionados
-    const variables: any = {
-      pacienteid: id_user,
-      name: new_state
-    };
-
-    if (severity_level !== undefined) {
-      variables.severity_level = severity_level;
-    }
-
-    if (description !== undefined) {
-      variables.description = description;
-    }
-
     const response = await axios.post(
       HASURA_GRAPHQL_ENDPOINT,
       {
         query: mutation,
-        variables
+        variables: {
+          pacienteid: id_user,
+          name: new_state,
+          severity_level: severity_level,
+          description: description || ""
+        },
       },
       {
         headers: {
@@ -311,7 +309,10 @@ router.post("/newState", async (req, res) => {
       data: response.data.data,
     });
   } catch (error: any) {
-    console.error("Error insertando estado:", error.response?.data || error.message);
+    console.error(
+      "Error actualizando estado:",
+      error.response?.data || error.message
+    );
     res.status(500).json({
       error: "Server error",
       message: error.message,
