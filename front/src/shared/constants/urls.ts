@@ -5,3 +5,5 @@ export const BaseURL =
 // Test endpoint
 export const UserInfoById = new URL("/triage/userBy", BaseURL);
 
+// Triage data endpoint
+export const TriageDataURL = new URL("/triage/userState", BaseURL);
