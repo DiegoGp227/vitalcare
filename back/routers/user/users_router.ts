@@ -134,7 +134,7 @@ router.get("/webhook", (req, res) => {
 router.post("/reporteInfo", async (req, res) => {
   const payload: DiagnosePayload = {
     query: "cómo esta el paciente",
-    patient_dni: "12345678",
+    patient_dni: req.body.cc,
   };
   const url = "https://wear-boston-valuable-ran.trycloudflare.com/diagnose";
   const response = await axios.post(url, payload, {
