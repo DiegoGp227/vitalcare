@@ -244,34 +244,33 @@ interface newStateProp {
 
 router.post("/newState", async (req, res) => {
   try {
-    const { id_user, new_state, severity_level, description }: newStateProp = req.body;
-    console.log("Insertando estado para usuario:", { id_user, new_state, severity_level });
+    const { id_user, new_state, severity_level, description }: newStateProp =
+      req.body;
+    console.log("Insertando estado para usuario:", {
+      id_user,
+      new_state,
+      severity_level,
+    });
 
     // Validar que severity_level esté entre 1 y 5
     if (severity_level < 1 || severity_level > 5) {
       return res.status(400).json({
         error: "Validation error",
-        message: "severity_level debe estar entre 1 y 5"
+        message: "severity_level debe estar entre 1 y 5",
       });
     }
 
     const mutation = `
       mutation InsertEstadoPaciente(
         $pacienteid: Int!
-        $name: String!
         $severity_level: Int!
-        $description: String
       ) {
         insert_estado_paciente_one(object: {
           pacienteid: $pacienteid
-          name: $name
           severity_level: $severity_level
-          description: $description
         }) {
           id
           pacienteid
-          name
-          description
           severity_level
           display_order
         }
@@ -286,7 +285,7 @@ router.post("/newState", async (req, res) => {
           pacienteid: id_user,
           name: new_state,
           severity_level: severity_level,
-          description: description || ""
+          description: description || "",
         },
       },
       {
