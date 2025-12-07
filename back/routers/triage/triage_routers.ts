@@ -30,6 +30,7 @@ router.get("/userBy/:id", async (req, res) => {
         demo
         dolor
         fecha
+        triage
         id
       }
     }

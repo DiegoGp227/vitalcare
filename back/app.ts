@@ -13,8 +13,8 @@ import {
 
 // routers
 import user_router from "./routers/user/users_router.js";
-import triage_router from "./routers/triage/triage_routers";
-
+import triage_router from "./routers/triage/triage_routers.js";
+import doctor_router from "./routers/doctor/doctor_router.js";
 // - variables
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +28,7 @@ app.use(cors());
 // router
 app.use("/user", user_router);
 app.use("/triage", triage_router);
+app.use("/doctor", doctor_router);
 // - listen
 app.listen(PORT, () => {
   console.log(`server init in port ${PORT} ...`);
