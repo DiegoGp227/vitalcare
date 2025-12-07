@@ -41,56 +41,7 @@ export default function TriagePage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   // Pacientes de ejemplo esperando triage
-  const waitingPatients: Patient[] = [
-    {
-      id: "P001",
-      cedula: "1.045.678.901",
-      name: "María",
-      lastName: "González Ruiz",
-      fullName: "María González Ruiz",
-      age: 45,
-      dateOfBirth: "15/03/1979",
-      gender: "Femenino",
-      address: "Calle 45 # 23-10, Apartamento 302, Bogotá",
-      phone: "+57 301 456 7890",
-      email: "maria.gonzalez@email.com",
-      chiefComplaint: "Dolor torácico",
-      arrivalTime: "14:23",
-      chatCompleted: true,
-    },
-    {
-      id: "P002",
-      cedula: "1.098.234.567",
-      name: "Juan",
-      lastName: "Pérez Morales",
-      fullName: "Juan Pérez Morales",
-      age: 28,
-      dateOfBirth: "22/08/1996",
-      gender: "Masculino",
-      address: "Carrera 15 # 88-45, Bogotá",
-      phone: "+57 310 987 6543",
-      email: "juan.perez@email.com",
-      chiefComplaint: "Esguince de tobillo",
-      arrivalTime: "14:35",
-      chatCompleted: true,
-    },
-    {
-      id: "P003",
-      cedula: "52.876.543",
-      name: "Ana",
-      lastName: "Martínez López",
-      fullName: "Ana Martínez López",
-      age: 62,
-      dateOfBirth: "10/11/1962",
-      gender: "Femenino",
-      address: "Avenida 68 # 45-23, Bogotá",
-      phone: "+57 320 456 1234",
-      email: "ana.martinez@email.com",
-      chiefComplaint: "Dificultad respiratoria",
-      arrivalTime: "14:48",
-      chatCompleted: true,
-    },
-  ];
+ 
 
   const handleAnalyzeWithAI = () => {
     setIsAnalyzing(true);
@@ -141,7 +92,7 @@ export default function TriagePage() {
       <Header />
 
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
-        <div className="grid grid-cols-12 gap-6">
+        <div className="flex justify-center gap-10">
           {/* Panel izquierdo - Lista de pacientes */}
           <UserQueue
             patients={waitingPatients}
@@ -150,7 +101,7 @@ export default function TriagePage() {
           />
 
           {/* Panel central - Formulario */}
-          <div className="col-span-6">
+          <div className="flex flex-col gap-1">
             {selectedPatient ? (
               <div className="space-y-6">
                 {/* Información del paciente */}
