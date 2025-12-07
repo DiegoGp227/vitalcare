@@ -173,32 +173,57 @@ router.post("/data", async (req, res) => {
   }
 });
 
-// router.get("/userState", async (req, res) => {
-//   const query = `
-//   query MyQuery($id : Int!) {
-//     paciente(where: { id: { _eq: $id } }){
-//       apellido
-//       cedula
-//       id
-//       fechanacimiento
-//       direccion
-//       email
-//       genero
-//       sintomas {
-//         demo
-//         dolor
-//         fecha
-//         id
-//       }
-//     }
-//   }
-//   `;
+router.get("/userState", async (req, res) => {
+  const query = `
+  query MyQuery {
+    paciente {
+      apellido
+      cedula
+      id
+      fechanacimiento
+      direccion
+      email
+      genero
+      sintomas {
+        demo
+        dolor
+        fecha
+        id
+      }
+    }
+  }
+  `;
 
-//   const response = await axios.get({ query: query });
+  try {
+    const response = await axios.post(
+      HASURA_GRAPHQL_ENDPOINT,
+      { query: query },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+        },
+      }
+    );
 
-//   res.json({
-//     data: response.data.data,
-//   });
-// });
+    if (response.data.errors) {
+      return res.status(400).json({
+        error: "GraphQL errors",
+        details: response.data.errors,
+      });
+    }
+
+    res.json({
+      data: response.data.data,
+    });
+  } catch (error: any) {
+    console.error("Error:", error.response?.data || error.message);
+    res.status(500).json({
+      error: "Server error",
+      message: error.message,
+      details: error.response?.data,
+    });
+  }
+});
 
 export default router;
