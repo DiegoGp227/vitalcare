@@ -65,39 +65,23 @@ export const useGetTriageData = () => {
 
       try {
         const url = "https://api-vitalcare.devdiego.work/triage/userState";
-        console.log('Fetching from URL:', url);
         const res = await fetch(url);
-        console.log('Response received:', res);
-        console.log('Response status:', res.status);
-        console.log('Response ok:', res.ok);
 
         if (!res.ok) {
-          console.error('Response not ok, status:', res.status);
           throw new Error("Error al obtener los datos de triage");
         }
 
         const json = await res.json();
-        console.log('API Response:', json);
-        console.log('json.data:', json.data);
-        console.log('json.data.paciente:', json.data?.paciente);
-
         const pacientesFromAPI: IPaciente[] = json.data?.paciente || [];
-        console.log('Extracted pacientes:', pacientesFromAPI);
-
         const mappedPatients = pacientesFromAPI.map(mapToPatient);
-        console.log('Mapped patients:', mappedPatients);
         setData(mappedPatients);
       } catch (err: any) {
-        console.error('Error in useGetTriageData:', err);
-        console.error('Error stack:', err.stack);
         setError(err.message || "Error desconocido");
       } finally {
-        console.log('Fetch completed, loading set to false');
         setLoading(false);
       }
     };
 
-    console.log('useGetTriageData effect running');
     fetchData();
   }, []);
 

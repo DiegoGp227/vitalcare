@@ -1,9 +1,9 @@
-import { Paciente } from "@/src/types/triage";
+import { Patient } from "@/src/types/triage";
 
 interface UserQueueProps {
-  patients: Paciente[];
-  selectedPatient: Paciente | null;
-  onSelectPatient: (patient: Paciente) => void;
+  patients: Patient[];
+  selectedPatient: Patient | null;
+  onSelectPatient: (patient: Patient) => void;
 }
 
 export function UserQueue({
@@ -11,8 +11,6 @@ export function UserQueue({
   selectedPatient,
   onSelectPatient,
 }: UserQueueProps) {
-  console.log('UserQueue patients:', patients);
-
   return (
     <div>
       <div className="bg-white rounded-2xl shadow-md overflow-hidden w-80">
@@ -29,13 +27,13 @@ export function UserQueue({
           {!patients || patients.length === 0 ? (
             <p className="text-gray-500 text-center py-4">No hay pacientes en espera</p>
           ) : (
-            patients.map((Paciente) => {
-              const isSelected = selectedPatient?.id === Paciente.id;
+            patients.map((patient) => {
+              const isSelected = selectedPatient?.id === patient.id;
 
               return (
               <div
-                key={Paciente.id}
-                onClick={() => onSelectPatient(Paciente)}
+                key={patient.id}
+                onClick={() => onSelectPatient(patient)}
                 className={`h-40 relative rounded-xl p-4 cursor-pointer transition-all duration-300 ${
                   isSelected
                     ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg scale-105"
@@ -56,14 +54,14 @@ export function UserQueue({
                     isSelected ? "text-white" : "text-gray-800"
                   }`}
                 >
-                  {Paciente.apellido}
+                  {patient.fullName}
                 </h3>
                 <p
                   className={`text-xs font-semibold uppercase tracking-wide ${
                     isSelected ? "text-white/80" : "text-gray-500"
                   }`}
                 >
-                  CC: {Paciente.cedula}
+                  CC: {patient.cedula}
                 </p>
                 <p
                   className={`mt-2 inline-block px-3 py-1 rounded-lg text-sm font-semibold ${
@@ -72,7 +70,14 @@ export function UserQueue({
                       : "bg-cyan-100 text-cyan-900"
                   }`}
                 >
-                  {Paciente.cedula}
+                  {patient.chiefComplaint}
+                </p>
+                <p
+                  className={`mt-2 flex items-center gap-1 text-xs font-semibold ${
+                    isSelected ? "text-white/80" : "text-gray-400"
+                  }`}
+                >
+                  🕐 {patient.arrivalTime}
                 </p>
               </div>
               );
