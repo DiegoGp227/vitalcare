@@ -33,10 +33,6 @@ app.use("/triage", triage_router);
 app.get("/ping", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
-// - listen
-app.listen(PORT, () => {
-  console.log(`server init in port ${PORT} ...`);
-});
 
 // --- Inicialización del Servidor ---
 async function startServer() {
