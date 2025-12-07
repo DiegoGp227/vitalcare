@@ -56,4 +56,3 @@ logs
 .editorconfig
 .eslintrc*
 .prettierrc*
-tsconfig.json
