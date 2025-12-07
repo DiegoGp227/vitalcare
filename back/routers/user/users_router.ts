@@ -16,6 +16,14 @@ const openai = new OpenAI({
 });
 
 // =======================================================
+// === 🌐 CONFIGURACIÓN HASURA
+// =======================================================
+// Usamos process.env con un fallback a los valores proporcionados
+const HASURA_GRAPHQL_ENDPOINT = process.env.GRAPHQL_API || "https://main-hermit-36.hasura.app/v1/graphql";
+const HASURA_ADMIN_SECRET = process.env.ADMIN_HASURA || "IAQXSF0JRCFC2ylKMuD6ZNnzdhKc69iSbxwTuG9EWEdy1CsLYsrmPWzBpqhh14Bc";
+
+
+// =======================================================
 // === 💾 ESTADO DE LA CONVERSACIÓN Y MOCK
 // =======================================================
 /**
@@ -25,33 +33,9 @@ const userSessionState: {
     [key: string]: 'START' | 'ASKING_CEDULA' | 'ASKING_SYMPTOMS' | 'DONE' | 'REJECTED'
 } = {};
 
-/**
- * MOCK DE BASE DE DATOS: Simula que solo estas cédulas están registradas.
- * Se ha incluido el usuario de prueba 1023955260 - Esteban Meza Betancur.
- */
-const MOCK_DB_CEDULAS = [
-    "10101010",
-    "20202020",
-    "30303030",
-    "1023955260" // ✅ Cédula del usuario de prueba
-];
-
-/**
- * Simula la verificación de la cédula en la base de datos y retorna el nombre.
- */
-function verifyCedulaInDB(cedula: string): { isValid: boolean, name: string | null } {
-    if (cedula === "1023955260") {
-        return { isValid: true, name: "Esteban Meza Betancur" }; // 👈 Usuario de prueba
-    }
-    if (MOCK_DB_CEDULAS.includes(cedula)) {
-         return { isValid: true, name: "Usuario Registrado" };
-    }
-    return { isValid: false, name: null };
-}
-
 
 // =======================================================
-// === 📞 FUNCIONES AUXILIARES
+// === 📞 FUNCIONES AUXILIARES Y LÓGICA HASURA
 // =======================================================
 
 interface IRegisterUser {
@@ -70,6 +54,55 @@ interface ILoginUser {
     cc: number
 }
 
+// ------------------------------------
+// 🆕 FUNCIÓN DE CONEXIÓN A HASURA
+// ------------------------------------
+/**
+ * Consulta la API de Hasura para verificar la cédula.
+ */
+async function fetchPacienteByCedula(cedula: string): Promise<{ isValid: boolean, name: string | null }> {
+    // Definición de la consulta GraphQL, inyectando la cédula directamente
+    const query = `
+        query MyQuery {
+            paciente(where: {cedula: {_eq: "${cedula}"}}) {
+                cedula
+                nombre
+                apellido
+            }
+        }
+    `;
+
+    try {
+        const response = await axios.post(
+            HASURA_GRAPHQL_ENDPOINT,
+            { query: query },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Usamos el Admin Secret para la autenticación
+                    'x-hasura-admin-secret': HASURA_ADMIN_SECRET, 
+                },
+            }
+        );
+
+        const pacientes = response.data.data.paciente;
+
+        if (pacientes && pacientes.length > 0) {
+            const user = pacientes[0];
+            const fullName = `${user.nombre} ${user.apellido}`.trim();
+            return { isValid: true, name: fullName };
+        } else {
+            return { isValid: false, name: null };
+        }
+
+    } catch (error: any) {
+        // En caso de error de conexión o Hasura, registra el error y falla la validación
+        console.error("❌ Error al consultar Hasura:", error.message || error);
+        return { isValid: false, name: null };
+    }
+}
+
+
 // Enviar mensaje a WhatsApp
 async function sendWhatsAppMessage(to: string, message: string) {
     if (!whatsappToken || !phoneId) {
@@ -77,7 +110,6 @@ async function sendWhatsAppMessage(to: string, message: string) {
         return;
     }
 
-    // Aquí está el código de envío de Axios
     return axios.post(
         `https://graph.facebook.com/v20.0/${phoneId}/messages`,
         {
@@ -95,18 +127,18 @@ async function sendWhatsAppMessage(to: string, message: string) {
 }
 
 /**
- * Procesa el número de cédula, verifica el mock y establece el siguiente estado.
+ * Procesa el número de cédula, llama a la API de Hasura y establece el siguiente estado.
  */
 async function processCedula(from: string, cedula: string) {
     console.log(`Cédula recibida de ${from}: ${cedula}`);
 
-    const { isValid, name } = verifyCedulaInDB(cedula); // 👈 Usar la nueva función
+    // 🔄 Usamos la función de Hasura en lugar del mock
+    const { isValid, name } = await fetchPacienteByCedula(cedula);
 
     if (isValid) {
         // Cédula VÁLIDA: Pide síntomas
         userSessionState[from] = 'ASKING_SYMPTOMS';
 
-        // Mensaje modificado para incluir el nombre del mock
         const welcomeName = name ? `${name}, ` : 'Bienvenido, ';
         const nextMessage = `¡${welcomeName}hemos encontrado tu registro! Por favor, **describe brevemente tus síntomas** o el motivo de tu visita.`;
 
@@ -122,7 +154,7 @@ async function processCedula(from: string, cedula: string) {
 
 
 // =======================================================
-// === 🤖 RUTAS DE AUTENTICACIÓN
+// === 🤖 RUTAS DE AUTENTICACIÓN (Sin cambios)
 // =======================================================
 
 router.post("/register", (req, res) => {
@@ -142,7 +174,7 @@ router.post("/login", (req, res) => {
 
 
 // =======================================================
-// === 💬 RUTAS DEL WEBHOOK DE WHATSAPP
+// === 💬 RUTAS DEL WEBHOOK DE WHATSAPP (Sin cambios en la lógica de estado)
 // =======================================================
 
 // ----------------------------
@@ -160,37 +192,31 @@ router.post("/webhook", async (req, res) => {
         // --- LÓGICA DE ESTADO ---
 
         if (currentState === 'START') {
-            // Primer mensaje: Saluda y pide la cédula
             const welcomeMessage = "¡Hola! Soy Paulo, tu asistente virtual. Para empezar, por favor, envíame tu **número de cédula** (documento de identidad).";
 
             await sendWhatsAppMessage(from, welcomeMessage);
             userSessionState[from] = 'ASKING_CEDULA';
 
         } else if (currentState === 'ASKING_CEDULA') {
-            // Segundo mensaje: Recibe la cédula y la procesa (Mock DB)
             const cedula = userMessage.trim();
 
-            // Validar que sean solo dígitos
             if (/^\d+$/.test(cedula)) {
-                await processCedula(from, cedula); // Llamar a la función con el mock
+                // Aquí se llama a processCedula, que ahora llama a Hasura
+                await processCedula(from, cedula); 
             } else {
                 const errorMessage = "El formato no es correcto. Por favor, ingresa solo los dígitos de tu número de cédula.";
                 await sendWhatsAppMessage(from, errorMessage);
             }
 
         } else if (currentState === 'ASKING_SYMPTOMS') {
-            // Tercer mensaje: Recibe los síntomas. (El nombre ya se obtuvo o se asume con la cédula)
             console.log(`Síntomas recibidos de ${from}: ${userMessage}`);
 
-            // ⚠️ Aquí es donde deberías guardar 'userMessage' (Síntomas) en tu DB
-
-            userSessionState[from] = 'DONE'; // Mover al estado final
+            userSessionState[from] = 'DONE';
 
             const confirmationMessage = `Gracias. Tu información ha sido enviada a nuestro personal médico. Puedes esperar en la sala, serás llamado pronto.`;
             await sendWhatsAppMessage(from, confirmationMessage);
 
         } else if (currentState === 'DONE') {
-            // Estado Finalizado: Usa ChatGPT para responder a consultas generales
             console.log(`Mensaje de ${from} (DONE): ${userMessage}`);
 
             const ai = await openai.chat.completions.create({
@@ -206,7 +232,6 @@ router.post("/webhook", async (req, res) => {
             await sendWhatsAppMessage(from, reply);
 
         } else if (currentState === 'REJECTED') {
-            // Estado Rechazado: El usuario no puede hacer nada más por chat.
             const rejectionReply = "Tu registro no fue encontrado. Por favor, acércate a la recepción.";
             await sendWhatsAppMessage(from, rejectionReply);
         }
