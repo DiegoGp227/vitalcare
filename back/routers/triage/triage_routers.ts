@@ -2,6 +2,12 @@ import { Router } from "express";
 import axios from "axios";
 import { vectorizeAllHistory } from "../../services/vectorization.service";
 
+enum EstadoPaciente {
+  EN_ESPERA = "en espera",
+  EN_DIAGNOSTICO = "en diagnostico",
+  EN_CONSULTA = "en consulta"
+}
+
 const router = Router();
 
 interface routerProp {
@@ -222,6 +228,90 @@ router.get("/userState", async (req, res) => {
     });
   } catch (error: any) {
     console.error("Error:", error.response?.data || error.message);
+    res.status(500).json({
+      error: "Server error",
+      message: error.message,
+      details: error.response?.data,
+    });
+  }
+});
+
+interface newStateProp {
+  id_user: number;
+  new_state: string;
+  severity_level?: number;
+  description?: string;
+}
+
+router.post("/newState", async (req, res) => {
+  try {
+    const { id_user, new_state, severity_level, description }: newStateProp = req.body;
+    console.log("Insertando nuevo estado para usuario:", { id_user, new_state });
+
+    const mutation = `
+      mutation InsertEstadoPaciente(
+        $pacienteid: Int!
+        $name: String!
+        $severity_level: Int
+        $description: String
+      ) {
+        insert_estado_paciente_one(object: {
+          pacienteid: $pacienteid
+          name: $name
+          severity_level: $severity_level
+          description: $description
+        }) {
+          id
+          pacienteid
+          name
+          description
+          severity_level
+          display_order
+        }
+      }
+    `;
+
+    // Construir variables solo con los campos proporcionados
+    const variables: any = {
+      pacienteid: id_user,
+      name: new_state
+    };
+
+    if (severity_level !== undefined) {
+      variables.severity_level = severity_level;
+    }
+
+    if (description !== undefined) {
+      variables.description = description;
+    }
+
+    const response = await axios.post(
+      HASURA_GRAPHQL_ENDPOINT,
+      {
+        query: mutation,
+        variables
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+        },
+      }
+    );
+
+    if (response.data.errors) {
+      return res.status(400).json({
+        error: "GraphQL errors",
+        details: response.data.errors,
+      });
+    }
+
+    res.json({
+      success: true,
+      data: response.data.data,
+    });
+  } catch (error: any) {
+    console.error("Error insertando estado:", error.response?.data || error.message);
     res.status(500).json({
       error: "Server error",
       message: error.message,
