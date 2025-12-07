@@ -5,8 +5,6 @@ import Header from "../components/molecules/Header";
 import { UserQueue } from "../components/organisms/UserQueue";
 import { PatientInfor } from "../components/molecules/PatientInfor";
 import VitalSigns from "../components/molecules/VitalSigns";
-import { Symptoms } from "../components/molecules/Symptoms";
-import { PhysicalExam } from "../components/molecules/PhysicalExam";
 import { AIAnalysisPanel } from "../components/organisms/AIAnalysisPanel";
 import {
   Patient,
@@ -15,9 +13,12 @@ import {
   PhysicalExam as PhysicalExamType,
   AIAnalysis,
 } from "../types/triage";
+import { waitingPatients } from "@/src/test/testdata";
 
 export default function TriagePage() {
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
+    waitingPatients[0]
+  );
   const [vitalSigns, setVitalSigns] = useState<VitalSignsType>({
     heartRate: "",
     bloodPressure: "",
@@ -40,13 +41,9 @@ export default function TriagePage() {
   const [finalTriage, setFinalTriage] = useState<number>(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Pacientes de ejemplo esperando triage
- 
-
   const handleAnalyzeWithAI = () => {
     setIsAnalyzing(true);
 
-    // Simular llamada a IA
     setTimeout(() => {
       setAiAnalysis({
         suggestedTriage: 2,
@@ -83,52 +80,34 @@ export default function TriagePage() {
     alert(
       `Paciente ${selectedPatient.fullName} clasificado como Triage ${finalTriage}`
     );
-    // Aquí iría la lógica para enviar al backend
   };
 
   return (
     <div className="min-h-screen bg-gray-bg">
-      {/* Header */}
       <Header />
 
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
         <div className="flex justify-center gap-10">
-          {/* Panel izquierdo - Lista de pacientes */}
           <UserQueue
-            patients={waitingPatients}
+            patients={waitingPatients} // <-- aquí pasas los pacientes de prueba
             selectedPatient={selectedPatient}
             onSelectPatient={setSelectedPatient}
           />
 
-          {/* Panel central - Formulario */}
           <div className="flex flex-col gap-1">
             {selectedPatient ? (
               <div className="space-y-6">
-                {/* Información del paciente */}
                 <PatientInfor patient={selectedPatient} />
+                <VitalSigns vitalSigns={vitalSigns} onChange={setVitalSigns} />
 
-                {/* Síntomas */}
-                <Symptoms symptoms={symptoms} onChange={setSymptoms} />
-
-                {/* Signos vitales */}
-                <VitalSigns
-                  vitalSigns={vitalSigns}
-                  onChange={setVitalSigns}
-                />
-
-                {/* Examen físico */}
-                <PhysicalExam
-                  physicalExam={physicalExam}
-                  onChange={setPhysicalExam}
-                />
-
-                {/* Botón analizar */}
                 <button
                   onClick={handleAnalyzeWithAI}
                   disabled={isAnalyzing}
                   className="w-full bg-primary hover:bg-primary-hover text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isAnalyzing ? "🔄 Analizando con IA..." : "🤖 Analizar con IA"}
+                  {isAnalyzing
+                    ? "🔄 Analizando con IA..."
+                    : "🤖 Analizar con IA"}
                 </button>
               </div>
             ) : (
@@ -140,7 +119,6 @@ export default function TriagePage() {
             )}
           </div>
 
-          {/* Panel derecho - Análisis de IA */}
           <AIAnalysisPanel
             analysis={aiAnalysis}
             finalTriage={finalTriage}
