@@ -30,7 +30,6 @@ export const useGetPersonalData = (id: string | null) => {
       try {
         const url = `${UserInfoById}/${id}`;
 
-        
         const res = await fetch(url);
         if (!res.ok) throw new Error("Error al obtener los datos del usuario");
         const json = await res.json();
