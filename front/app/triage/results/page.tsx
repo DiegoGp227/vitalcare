@@ -104,7 +104,7 @@ export default function ResultsPage() {
 
     // Aquí se guardaría el triage en el backend
     alert(`Triage nivel ${selectedTriage} confirmado exitosamente`);
-    router.push("/triage");
+    router.push("/doctor");
   };
 
   const getPriorityColor = (priority: string) => {
@@ -262,7 +262,9 @@ export default function ResultsPage() {
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-700 mb-3">Imagenología</h4>
+                <h4 className="font-semibold text-gray-700 mb-3">
+                  Imagenología
+                </h4>
                 <div className="space-y-2">
                   {aiResults.recommendedStudies.imaging.map((study, index) => (
                     <div
@@ -288,19 +290,25 @@ export default function ResultsPage() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Estancia Estimada</p>
+                  <p className="text-sm text-gray-600 mb-1">
+                    Estancia Estimada
+                  </p>
                   <p className="text-2xl font-bold text-gray-800">
                     {aiResults.predictions.estimatedStay}
                   </p>
                 </div>
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Prob. de Admisión</p>
+                  <p className="text-sm text-gray-600 mb-1">
+                    Prob. de Admisión
+                  </p>
                   <p className="text-2xl font-bold text-gray-800">
                     {aiResults.predictions.admissionProbability}%
                   </p>
                 </div>
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Riesgo de Deterioro</p>
+                  <p className="text-sm text-gray-600 mb-1">
+                    Riesgo de Deterioro
+                  </p>
                   <p className="text-2xl font-bold text-gray-800">
                     {aiResults.predictions.deteriorationRisk}%
                   </p>
@@ -371,7 +379,8 @@ export default function ResultsPage() {
               </button>
 
               <p className="text-xs text-gray-500 text-center mt-4">
-                Al confirmar, el paciente será asignado a la prioridad seleccionada
+                Al confirmar, el paciente será asignado a la prioridad
+                seleccionada
               </p>
             </div>
           </div>
