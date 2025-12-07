@@ -1,6 +1,7 @@
 import { Router } from "express";
 import axios from "axios";
 import OpenAI from "openai";
+import { processWebhookMessage } from "../../src/webhookLogic";
 
 const router = Router();
 
@@ -74,4 +75,37 @@ router.post("/login", async (req, res) => {
   });
 });
 
+// =======================================================
+// === 💬 RUTAS DEL WEBHOOK DE WHATSAPP
+// =======================================================
+
+// ----------------------------
+// 1. WHATSAPP WEBHOOK POST (Recibir mensajes)
+// ----------------------------
+// Se usa el handler importado de webhookLogic
+router.post("/webhook", processWebhookMessage);
+
+// ----------------------------
+// 2. WHATSAPP VERIFICACIÓN GET (Conexión inicial con Meta)
+// ----------------------------
+router.get("/webhook", (req, res) => {
+    const mode = req.query["hub.mode"];
+    const token = req.query["hub.verify_token"];
+    const challenge = req.query["hub.challenge"];
+
+    // EL TOKEN DEBE COINCIDIR CON EL CONFIGURADO EN META
+    if (mode === "subscribe" && token === "verify_token_mio") {
+        console.log("✅ Webhook verificado correctamente!");
+        return res.status(200).send(challenge);
+    }
+
+    console.log("❌ Error de verificación. Token o modo incorrecto.");
+    res.sendStatus(403);
+});
+
 export default router;
+
+
+
+
+

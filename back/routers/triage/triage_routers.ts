@@ -1,5 +1,6 @@
 import { Router } from "express";
 import axios from "axios";
+import { vectorizeAllHistory } from "../../services/vectorization.service";
 
 const router = Router();
 
@@ -151,6 +152,8 @@ router.post("/data", async (req, res) => {
         },
       }
     );
+
+    await vectorizeAllHistory();
 
     if (response.data.errors) {
       return res.status(400).json({
