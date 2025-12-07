@@ -22,7 +22,6 @@ router.get("/userBy/:id", async (req, res) => {
       cedula
       id
       fechanacimiento
-
       direccion
       email
       genero
@@ -174,9 +173,32 @@ router.post("/data", async (req, res) => {
   }
 });
 
-// router.get("/userState", (req, res) => {
-//   const query = ``;
-//   res.json("test");
-// });
+router.get("/userState", async (req, res) => {
+  const query = `
+  query MyQuery($id : Int!) {
+    paciente(where: { id: { _eq: $id } }){
+      apellido
+      cedula
+      id
+      fechanacimiento
+      direccion
+      email
+      genero
+      sintomas {
+        demo
+        dolor
+        fecha
+        id
+      }
+    }
+  }
+  `;
+
+  const response = await axios.get({ query });
+
+  res.json({
+    data: response.data.data,
+  });
+});
 
 export default router;
