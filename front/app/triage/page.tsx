@@ -9,8 +9,6 @@ import { AIAnalysisPanel } from "../components/organisms/AIAnalysisPanel";
 import {
   Patient,
   VitalSigns as VitalSignsType,
-  Symptoms as SymptomsType,
-  PhysicalExam as PhysicalExamType,
   AIAnalysis,
 } from "../types/triage";
 import { waitingPatients } from "@/src/test/testdata";
@@ -26,17 +24,7 @@ export default function TriagePage() {
     oxygenSaturation: "",
     respiratoryRate: "",
   });
-  const [symptoms, setSymptoms] = useState<SymptomsType>({
-    painLevel: "0",
-    painZone: "",
-    onsetDateTime: "",
-  });
-  const [physicalExam, setPhysicalExam] = useState<PhysicalExamType>({
-    generalAppearance: "",
-    painLevel: "0",
-    consciousness: "alerta",
-    additionalFindings: "",
-  });
+
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysis | null>(null);
   const [finalTriage, setFinalTriage] = useState<number>(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
