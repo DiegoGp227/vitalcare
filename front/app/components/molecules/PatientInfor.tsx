@@ -1,4 +1,4 @@
-import { Patient } from "@/app/types/triage";
+import { Patient } from "@/src/types/triage";
 
 interface PatientInforProps {
   patient: Patient;

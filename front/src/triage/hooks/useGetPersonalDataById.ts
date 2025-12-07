@@ -1,6 +1,8 @@
 "use client";
 
+import { UserInfoById } from "@/src/shared/constants/urls";
 import { useState, useEffect } from "react";
+
 export interface UserData {
   id: string;
   identification_number: string;
@@ -26,7 +28,10 @@ export const useGetPersonalData = (id: string | null) => {
       setError(null);
 
       try {
-        const res = await fetch(`/api/users/${id}`);
+        const url = new URL(UserInfoById);
+        url.searchParams.set("id", id);
+
+        const res = await fetch(url.toString());
         if (!res.ok) throw new Error("Error al obtener los datos del usuario");
         const json = await res.json();
         setData(json);
