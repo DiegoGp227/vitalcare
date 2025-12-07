@@ -42,7 +42,6 @@ router.post("/login", async (req, res) => {
       cedula
       id
       fechanacimiento
-
       direccion
       email
       genero

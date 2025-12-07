@@ -13,8 +13,8 @@ const HASURA_ADMIN_SECRET =
   process.env.ADMIN_HASURA ||
   "IAQXSF0JRCFC2ylKMuD6ZNnzdhKc69iSbxwTuG9EWEdy1CsLYsrmPWzBpqhh14Bc";
 
-router.post("/", async (req, res) => {
-  const { id }: routerProp = req.body;
+router.get("/userBy/:id", async (req, res) => {
+  const { id } = req.params.id;
   const query = `
   query MyQuery($id : Int!) {
     paciente(where: { id: { _eq: $id } }){
@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
         },
       }
     );
-    console.log(response);
+    console.log(response.data.data);
     res.json({
       data: response.data.data,
     });
@@ -173,5 +173,10 @@ router.post("/data", async (req, res) => {
     });
   }
 });
+
+// router.get("/userState", (req, res) => {
+//   const query = ``;
+//   res.json("test");
+// });
 
 export default router;
