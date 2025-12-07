@@ -3,6 +3,7 @@ version: '3.8'
 services:
   # Backend (Express + TypeScript)
   backend:
+    platform: linux/amd64
     build:
       context: ./back
       dockerfile: Dockerfile

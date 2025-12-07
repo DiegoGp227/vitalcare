@@ -1,7 +1,14 @@
 # Multi-stage build para optimizar el tamaño de la imagen
 
 # Stage 1: Builder
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
+
+# Instalar dependencias del sistema necesarias para onnxruntime-node
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalar pnpm
 RUN npm install -g pnpm
@@ -21,7 +28,12 @@ COPY . .
 RUN pnpm run build
 
 # Stage 2: Production
-FROM node:20-alpine AS production
+FROM node:20-slim AS production
+
+# Instalar dependencias del sistema necesarias para onnxruntime-node en runtime
+RUN apt-get update && apt-get install -y \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalar pnpm
 RUN npm install -g pnpm
@@ -47,7 +59,14 @@ USER node
 CMD ["pnpm", "start"]
 
 # Stage 3: Development
-FROM node:20-alpine AS development
+FROM node:20-slim AS development
+
+# Instalar dependencias del sistema necesarias para onnxruntime-node
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalar pnpm
 RUN npm install -g pnpm
