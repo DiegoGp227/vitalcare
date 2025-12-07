@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/molecules/Header";
 import { UserQueue } from "../components/organisms/UserQueue";
@@ -8,23 +8,32 @@ import { PatientInfor } from "../components/molecules/PatientInfor";
 import VitalSigns from "../components/molecules/VitalSigns";
 import { AIAnalysisPanel } from "../components/organisms/AIAnalysisPanel";
 import {
-  Patient,
+  Paciente,
   VitalSigns as VitalSignsType,
   AIAnalysis,
 } from "../../src/types/triage";
-import { waitingPatients } from "@/src/test/testdata";
+import { useGetTriageData } from "@/src/triage/hooks/useGetTriageData";
 import { useGetPersonalData } from "@/src/triage/hooks/useGetPersonalDataById";
 
 export default function TriagePage() {
   const router = useRouter();
 
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(
-    waitingPatients[0]
-  );
+  // Hook para obtener todos los pacientes en espera de triage
+  const { data: triagePatients, loading: loadingPatients, error: patientsError } =
+    useGetTriageData();
+
+  const [selectedPatient, setSelectedPatient] = useState<Paciente | null>(null);
+
+  // Seleccionar el primer paciente cuando se carguen los datos
+  useEffect(() => {
+    if (triagePatients.length > 0 && !selectedPatient) {
+      setSelectedPatient(triagePatients[0]);
+    }
+  }, [triagePatients, selectedPatient]);
 
   // Hook que automáticamente hace fetch cuando cambia el paciente seleccionado
   const { data: patientData, loading: loadingPatientData, error: patientError } =
-    useGetPersonalData(selectedPatient?.id || null);
+    useGetPersonalData(selectedPatient?.id.toString() || null);
   const [vitalSigns, setVitalSigns] = useState<VitalSignsType>({
     heartRate: "",
     bloodPressure: "",
@@ -56,7 +65,7 @@ export default function TriagePage() {
     if (!selectedPatient || finalTriage === 0) return;
 
     alert(
-      `Paciente ${selectedPatient.fullName} clasificado como Triage ${finalTriage}`
+      `Paciente ${selectedPatient.apellido} clasificado como Triage ${finalTriage}`
     );
   };
 
@@ -67,7 +76,7 @@ export default function TriagePage() {
       <div className="max-w-screen-2xl mx-auto px-6 py-6">
         <div className="flex justify-center gap-10">
           <UserQueue
-            patients={waitingPatients}
+            patients={triagePatients}
             selectedPatient={selectedPatient}
             onSelectPatient={setSelectedPatient}
           />
