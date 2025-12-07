@@ -17,8 +17,8 @@ router.post("/", async (req, res) => {
   const { id }: routerProp = req.body;
   console.log(id);
   const query = `
-  query MyQuery($id : int!) {
-    paciente(where: {id : {_eq : $id}}){
+  query MyQuery($id : Int!) {
+    paciente(where: { id: { _eq: $id } }){
       apellido
       cedula
       id
@@ -37,19 +37,29 @@ router.post("/", async (req, res) => {
     }
   }
   `;
-  const response = await axios.post(
-    HASURA_GRAPHQL_ENDPOINT,
-    { query: query },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+  try {
+    const response = await axios.post(
+      HASURA_GRAPHQL_ENDPOINT,
+      {
+        query: query,
+        variables: { id: id },
       },
-    }
-  );
-  res.json({
-    data: response.data.data,
-  });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-hasura-admin-secret": HASURA_ADMIN_SECRET,
+        },
+      }
+    );
+    console.log(response);
+    res.json({
+      data: response.data.data,
+    });
+  } catch {
+    res.json({
+      mgs: "mensaje",
+    });
+  }
 });
 
 export default router;
